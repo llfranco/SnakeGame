@@ -2,10 +2,12 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class SnakeBodyPart : MonoBehaviour
+    public sealed class SnakeBodyPart : MonoBehaviour, ISnakeBodyPart
     {
         private Transform _transform;
         private Vector2Int _gridPosition;
+
+        public ISnake Snake { get; set; }
 
         public Vector2Int GridPosition
         {
@@ -17,7 +19,11 @@ namespace SnakeGame
             }
         }
 
-        public Quaternion Rotation { get => _transform.rotation; set => _transform.rotation = value; }
+        public Quaternion Rotation
+        {
+            get => _transform.rotation;
+            set => _transform.rotation = value;
+        }
 
         private void Awake()
         {

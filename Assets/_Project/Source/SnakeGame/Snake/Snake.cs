@@ -3,15 +3,6 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public interface ISnake
-    {
-        void IncreaseBodySize();
-    }
-
-    public interface IBoardObject
-    {
-    }
-
     public sealed class Snake : MonoBehaviour, ISnake
     {
         [SerializeField]
@@ -66,11 +57,14 @@ namespace SnakeGame
         private void CreateHead()
         {
             _head = Instantiate(_settings.HeadPrefab);
+            _head.Snake = this;
         }
 
         private void CreateBodyPart()
         {
-            _bodyParts.Add(Instantiate(_settings.BodyPartPrefab));
+            SnakeBodyPart bodyPart = Instantiate(_settings.BodyPartPrefab);
+            bodyPart.Snake = this;
+            _bodyParts.Add(bodyPart);
         }
 
         private void Move()
