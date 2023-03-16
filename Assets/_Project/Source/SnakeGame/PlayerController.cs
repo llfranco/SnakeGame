@@ -4,8 +4,12 @@ namespace SnakeGame
 {
     public sealed class PlayerController : MonoBehaviour
     {
-        [SerializeField]
         private Snake _snake;
+
+        public void SetSnake(Snake snake)
+        {
+            _snake = snake;
+        }
 
         private void Update()
         {

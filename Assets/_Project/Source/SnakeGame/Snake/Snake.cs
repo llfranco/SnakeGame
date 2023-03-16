@@ -5,6 +5,10 @@ namespace SnakeGame
 {
     public sealed class Snake : MonoBehaviour, ISnake
     {
+        public delegate void DeathHandler(Snake sender);
+
+        public event DeathHandler OnDeath;
+
         [SerializeField]
         private SnakeSettings _settings;
 
@@ -21,6 +25,11 @@ namespace SnakeGame
         public void StopMoving()
         {
             CancelInvoke(nameof(Move));
+        }
+
+        public void SetPosition(Vector2Int position)
+        {
+            _head.Position = position;
         }
 
         public void ChangeMovementDirection(Vector2Int direction)
@@ -51,7 +60,6 @@ namespace SnakeGame
             _headRecordedMovements = new List<RecordedBoardObjectMovement>();
 
             CreateHead();
-            StartMoving();
         }
 
         private void CreateHead()
@@ -78,6 +86,13 @@ namespace SnakeGame
 
         private void Move()
         {
+            Vector2Int nextHeadPosition = _head.Position + _direction * _settings.MovementSpeed;
+
+            if (DieIfInvalidPosition(nextHeadPosition))
+            {
+                return;
+            }
+
             _headRecordedMovements.Insert(0, new RecordedBoardObjectMovement
             {
                 Position = _head.Position,
@@ -91,15 +106,6 @@ namespace SnakeGame
 
             UpdateBodyPartPositions();
 
-            Vector2Int nextHeadPosition = _direction * _settings.MovementSpeed;
-
-            if (HasMatchingBodyPosition(nextHeadPosition))
-            {
-                Die();
-
-                return;
-            }
-
             float movementAngle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
 
             if (movementAngle < 0)
@@ -108,16 +114,32 @@ namespace SnakeGame
             }
 
             _head.Rotation = Quaternion.Euler(new Vector3(0, 0, movementAngle - 90));
-            _head.Position += _direction * _settings.MovementSpeed;
+            _head.Position = nextHeadPosition;
         }
 
         private void Die()
         {
-            StopMoving();
             Debug.Log("Snake has died");
+            OnDeath?.Invoke(this);
         }
 
-        private bool HasMatchingBodyPosition(Vector2Int position)
+        private bool DieIfInvalidPosition(Vector2Int position)
+        {
+            bool doesPositionExist = ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService) && boardService.DoesPositionExist(position);
+            bool hasBodyPartInMatchingPosition = HasBodyPartInMatchingPosition(position);
+
+            if (doesPositionExist && !hasBodyPartInMatchingPosition)
+            {
+                return false;
+            }
+
+            StopMoving();
+            Die();
+
+            return true;
+        }
+
+        private bool HasBodyPartInMatchingPosition(Vector2Int position)
         {
             foreach (SnakeBodyPart bodyPart in _bodyParts)
             {
