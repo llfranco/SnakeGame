@@ -9,10 +9,10 @@ namespace SnakeGame
         private Vector2Int _size;
 
         [SerializeField]
-        private GameObject _tilePrefab;
+        private BoardSlot _slotPrefab;
 
         public Vector2Int Size => _size;
 
-        public GameObject TilePrefab => _tilePrefab;
+        public BoardSlot SlotPrefab => _slotPrefab;
     }
 }

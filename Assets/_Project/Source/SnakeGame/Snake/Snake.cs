@@ -67,11 +67,20 @@ namespace SnakeGame
             _bodyParts.Add(bodyPart);
         }
 
+        private void UpdateBodyPartPositions()
+        {
+            for (int i = 0; i < _bodyParts.Count; i++)
+            {
+                _bodyParts[i].Position = _headRecordedMovements[i].Position;
+                _bodyParts[i].Rotation = _headRecordedMovements[i].Rotation;
+            }
+        }
+
         private void Move()
         {
             _headRecordedMovements.Insert(0, new RecordedBoardObjectMovement
             {
-                GridPosition = _head.GridPosition,
+                Position = _head.Position,
                 Rotation = _head.Rotation,
             });
 
@@ -82,6 +91,15 @@ namespace SnakeGame
 
             UpdateBodyPartPositions();
 
+            Vector2Int nextHeadPosition = _direction * _settings.MovementSpeed;
+
+            if (HasMatchingBodyPosition(nextHeadPosition))
+            {
+                Die();
+
+                return;
+            }
+
             float movementAngle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
 
             if (movementAngle < 0)
@@ -90,16 +108,26 @@ namespace SnakeGame
             }
 
             _head.Rotation = Quaternion.Euler(new Vector3(0, 0, movementAngle - 90));
-            _head.GridPosition += _direction * _settings.MovementSpeed;
+            _head.Position += _direction * _settings.MovementSpeed;
         }
 
-        private void UpdateBodyPartPositions()
+        private void Die()
         {
-            for (int i = 0; i < _bodyParts.Count; i++)
+            StopMoving();
+            Debug.Log("Snake has died");
+        }
+
+        private bool HasMatchingBodyPosition(Vector2Int position)
+        {
+            foreach (SnakeBodyPart bodyPart in _bodyParts)
             {
-                _bodyParts[i].GridPosition = _headRecordedMovements[i].GridPosition;
-                _bodyParts[i].Rotation = _headRecordedMovements[i].Rotation;
+                if (bodyPart.Position == position)
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
     }
 }

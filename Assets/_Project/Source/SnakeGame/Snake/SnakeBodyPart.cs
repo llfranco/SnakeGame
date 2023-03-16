@@ -2,20 +2,29 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class SnakeBodyPart : MonoBehaviour, ISnakeBodyPart
+    public sealed class SnakeBodyPart : MonoBehaviour, ISnakeBodyPart, IBoardObject
     {
         private Transform _transform;
-        private Vector2Int _gridPosition;
+        private Vector2Int _position;
 
         public ISnake Snake { get; set; }
 
-        public Vector2Int GridPosition
+        public Vector2Int Position
         {
-            get => _gridPosition;
+            get => _position;
             set
             {
-                _gridPosition = value;
+                if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService))
+                {
+                    return;
+                }
+
+                boardService.UnoccupyPosition(this);
+
+                _position = value;
                 _transform.position = new Vector3(value.x, value.y);
+
+                boardService.OccupyPosition(this);
             }
         }
 
@@ -28,7 +37,7 @@ namespace SnakeGame
         private void Awake()
         {
             _transform = transform;
-            _gridPosition = Vector2Int.zero;
+            _position = Vector2Int.zero;
         }
     }
 }

@@ -5,9 +5,18 @@ namespace SnakeGame
         private static object _key;
         private static T _service;
 
-        public static T GetService()
+        public static bool TryGetService(out T service)
         {
-            return _service;
+            if (_service != null)
+            {
+                service = _service;
+
+                return true;
+            }
+
+            service = default;
+
+            return false;
         }
 
         public static void SetKey(object key)

@@ -4,7 +4,7 @@ namespace SnakeGame
 {
     public struct RecordedBoardObjectMovement
     {
-        public Vector2Int GridPosition;
+        public Vector2Int Position;
         public Quaternion Rotation;
     }
 }
