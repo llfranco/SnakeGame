@@ -2,7 +2,7 @@
 
 namespace SnakeGame.Game
 {
-    public sealed class GameSceneSystem : MonoBehaviour
+    public sealed class GameSystem : MonoBehaviour
     {
         [SerializeField]
         private PlayerController _controller;
