@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c0af5b45d845439265ef9466c5ab26, type: 3}
   m_Name: SnakeSettings
   m_EditorClassIdentifier: 
+  _headPrefab: {fileID: 5299983621970351342, guid: 75b698923f4bd3644ad1d51e3dc6d817, type: 3}
   _bodyPartPrefab: {fileID: 5090117312616964972, guid: 220e8695c8058b24a9d09a94b037b9cd, type: 3}
   _movementSpeed: 1
   _startMovingDelay: 1
-  _movementRate: 1
+  _movementRate: 0.125

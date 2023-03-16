@@ -2,37 +2,10 @@
 
 namespace SnakeGame
 {
-    public interface IService
-    {
-    }
-
-    public interface IBoardService : IService
-    {
-    }
-
-    public static class ServiceLocator<T> where T : IService
-    {
-        private static object _key;
-        private static T _service;
-
-        public static void SetKey(object key)
-        {
-            _key = key;
-        }
-
-        public static void SetService(T service, object key)
-        {
-            if (key != _key)
-            {
-                return;
-            }
-
-            _service = service;
-        }
-    }
-
     public sealed class Board : MonoBehaviour, IBoardService
     {
+        private static object _serviceKey = new();
+
         [SerializeField]
         private BoardSettings _settings;
 
@@ -41,6 +14,9 @@ namespace SnakeGame
         private void Awake()
         {
             CreateTiles();
+
+            ServiceLocator<IBoardService>.SetKey(_serviceKey);
+            ServiceLocator<IBoardService>.SetService(this, _serviceKey);
         }
 
         private void CreateTiles()

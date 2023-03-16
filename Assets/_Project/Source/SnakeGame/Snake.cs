@@ -3,28 +3,33 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public struct TransformRecord
+    public interface ISnake
     {
-        public Vector2Int GridPosition;
-        public Quaternion Rotation;
+        void IncreaseBodySize();
     }
 
-    
+    public interface IBoardObject
+    {
+    }
 
-    public sealed class Snake : MonoBehaviour
+    public sealed class Snake : MonoBehaviour, ISnake
     {
         [SerializeField]
         private SnakeSettings _settings;
 
-        private Transform _transform;
-        private Vector2Int _gridPosition;
         private Vector2Int _direction;
+        private SnakeBodyPart _head;
         private List<SnakeBodyPart> _bodyParts;
-        private List<TransformRecord> _movementHistory;
+        private List<RecordedBoardObjectMovement> _headRecordedMovements;
 
         public void StartMoving()
         {
             InvokeRepeating(nameof(Move), _settings.StartMovingDelay, _settings.MovementRate);
+        }
+
+        public void StopMoving()
+        {
+            CancelInvoke(nameof(Move));
         }
 
         public void ChangeMovementDirection(Vector2Int direction)
@@ -44,59 +49,44 @@ namespace SnakeGame
 
         public void IncreaseBodySize()
         {
-            _bodyParts.Add(Instantiate(_settings.BodyPartPrefab));
-
-            for (int i = 0; i < _bodyParts.Count; i++)
-            {
-                _bodyParts[i].transform.position = new Vector3(_movementHistory[i].GridPosition.x, _movementHistory[i].GridPosition.y);
-                _bodyParts[i].transform.rotation = _movementHistory[i].Rotation;
-            }
+            CreateBodyPart();
+            UpdateBodyPartPositions();
         }
 
         private void Awake()
         {
-            _transform = transform;
-            _gridPosition = Vector2Int.zero;
             _direction = Vector2Int.down;
             _bodyParts = new List<SnakeBodyPart>();
-            _movementHistory = new List<TransformRecord>();
+            _headRecordedMovements = new List<RecordedBoardObjectMovement>();
 
+            CreateHead();
             StartMoving();
+        }
+
+        private void CreateHead()
+        {
+            _head = Instantiate(_settings.HeadPrefab);
+        }
+
+        private void CreateBodyPart()
+        {
+            _bodyParts.Add(Instantiate(_settings.BodyPartPrefab));
         }
 
         private void Move()
         {
-            _movementHistory.Insert(0, new TransformRecord
+            _headRecordedMovements.Insert(0, new RecordedBoardObjectMovement
             {
-                GridPosition = _gridPosition,
-                Rotation = _transform.rotation,
+                GridPosition = _head.GridPosition,
+                Rotation = _head.Rotation,
             });
 
-            if (_movementHistory.Count > _bodyParts.Count + 1)
+            if (_headRecordedMovements.Count > _bodyParts.Count + 1)
             {
-                _movementHistory.RemoveAt(_movementHistory.Count - 1);
+                _headRecordedMovements.RemoveAt(_headRecordedMovements.Count - 1);
             }
 
-            Debug.Log($"{nameof(_movementHistory)} Count: {_movementHistory.Count}");
-
-            foreach (TransformRecord transformRecord in _movementHistory)
-            {
-                Debug.Log($"{nameof(transformRecord)}: {transformRecord.GridPosition}");
-            }
-
-            Debug.Log("---------------");
-
-            for (int i = 0; i < _bodyParts.Count; i++)
-            {
-                _bodyParts[i].transform.position = new Vector3(_movementHistory[i].GridPosition.x, _movementHistory[i].GridPosition.y);
-                _bodyParts[i].transform.rotation = _movementHistory[i].Rotation;
-
-                Debug.Log($"{nameof(_bodyParts)}[{i}]: {_movementHistory[i].GridPosition}");
-            }
-
-            Debug.Log("---------------");
-
-            _gridPosition += _direction * _settings.MovementSpeed;
+            UpdateBodyPartPositions();
 
             float movementAngle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
 
@@ -105,8 +95,17 @@ namespace SnakeGame
                 movementAngle += 360;
             }
 
-            _transform.position = new Vector3(_gridPosition.x, _gridPosition.y);
-            _transform.eulerAngles = new Vector3(0, 0, movementAngle - 90);
+            _head.Rotation = Quaternion.Euler(new Vector3(0, 0, movementAngle - 90));
+            _head.GridPosition += _direction * _settings.MovementSpeed;
+        }
+
+        private void UpdateBodyPartPositions()
+        {
+            for (int i = 0; i < _bodyParts.Count; i++)
+            {
+                _bodyParts[i].GridPosition = _headRecordedMovements[i].GridPosition;
+                _bodyParts[i].Rotation = _headRecordedMovements[i].Rotation;
+            }
         }
     }
 }

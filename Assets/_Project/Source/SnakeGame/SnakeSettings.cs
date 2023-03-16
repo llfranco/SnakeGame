@@ -6,6 +6,9 @@ namespace SnakeGame
     public sealed class SnakeSettings : ScriptableObject
     {
         [SerializeField]
+        private SnakeBodyPart _headPrefab;
+
+        [SerializeField]
         private SnakeBodyPart _bodyPartPrefab;
 
         [SerializeField]
@@ -16,6 +19,8 @@ namespace SnakeGame
 
         [SerializeField]
         private float _movementRate = 0.125f;
+
+        public SnakeBodyPart HeadPrefab => _headPrefab;
 
         public SnakeBodyPart BodyPartPrefab => _bodyPartPrefab;
 

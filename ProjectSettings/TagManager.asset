@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Board
+    uniqueID: 26155771
+    locked: 0
+  - name: Food
+    uniqueID: 3322530333
+    locked: 0
+  - name: Snake
+    uniqueID: 407914469
+    locked: 0
