@@ -6,6 +6,8 @@ namespace SnakeGame
 {
     public sealed class GameSystem : MonoBehaviour, IGameService
     {
+        public event GameHandler OnGameEnd;
+
         private readonly object _serviceKey = new();
 
         [SerializeField]
@@ -43,6 +45,11 @@ namespace SnakeGame
             {
                 listener.NotifyGameSetup();
             }
+        }
+
+        private void EndGame()
+        {
+            OnGameEnd?.Invoke();
         }
 
         void IGameService.BeginGame()
