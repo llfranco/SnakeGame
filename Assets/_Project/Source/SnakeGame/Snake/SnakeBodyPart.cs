@@ -5,6 +5,9 @@ namespace SnakeGame
 {
     public sealed class SnakeBodyPart : MonoBehaviour, IBoardObject, IFoodInstigator
     {
+        [SerializeField]
+        private SpriteRenderer _renderer;
+
         private Transform _transform;
         private Vector2Int _position;
 
@@ -33,6 +36,12 @@ namespace SnakeGame
         {
             get => _transform.rotation;
             set => _transform.rotation = value;
+        }
+
+        public Color Color
+        {
+            get => _renderer.color;
+            set => _renderer.color = value;
         }
 
         private void Awake()

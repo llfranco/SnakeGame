@@ -7,8 +7,8 @@ namespace SnakeGame
     public sealed class PlayerSystemSettings : ScriptableObject
     {
         [SerializeField]
-        private List<PlayerActionMap> _playerActionMaps;
+        private List<PlayerSettings> _playerList;
 
-        public List<PlayerActionMap> PlayerActionMaps => _playerActionMaps;
+        public List<PlayerSettings> PlayerList => _playerList;
     }
 }

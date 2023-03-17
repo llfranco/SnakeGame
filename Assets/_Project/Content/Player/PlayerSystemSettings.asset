@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6c14c997ec34db3a65e83a62b4e9618, type: 3}
   m_Name: PlayerSystemSettings
   m_EditorClassIdentifier: 
-  _playerActionMaps:
+  _playerList:
   - {fileID: 11400000, guid: 4620222442c61de4d81a5e34ad8de6d3, type: 2}
   - {fileID: 11400000, guid: 28724bec695949846bbc07b0aeded689, type: 2}

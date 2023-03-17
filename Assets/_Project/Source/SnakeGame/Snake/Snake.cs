@@ -16,7 +16,8 @@ namespace SnakeGame
         [SerializeField]
         private SnakeSettings _settings;
 
-        private Vector2Int _direction;
+        private Vector2Int _previousMovementDirection;
+        private Vector2Int _currentDirection;
         private SnakeBodyPart _head;
         private List<SnakeBodyPart> _bodyParts;
         private List<TransformRecord> _headTransformRecords;
@@ -77,7 +78,8 @@ namespace SnakeGame
 
         private void Awake()
         {
-            _direction = Vector2Int.down;
+            _previousMovementDirection = Vector2Int.down;
+            _currentDirection = Vector2Int.down;
             _bodyParts = new List<SnakeBodyPart>();
             _headTransformRecords = new List<TransformRecord>();
         }
@@ -85,7 +87,9 @@ namespace SnakeGame
         private void CreateBodyPart()
         {
             SnakeBodyPart bodyPart = Instantiate(_settings.BodyPartPrefab);
+            bodyPart.Color = _head.Color;
             bodyPart.Snake = this;
+
             _bodyParts.Add(bodyPart);
         }
 
@@ -100,7 +104,7 @@ namespace SnakeGame
 
         private void Move()
         {
-            Vector2Int nextHeadPosition = _head.Position + _direction * _settings.MovementSpeed;
+            Vector2Int nextHeadPosition = _head.Position + _currentDirection * _settings.MovementSpeed;
 
             if (DieIfInvalidPosition(nextHeadPosition))
             {
@@ -120,13 +124,14 @@ namespace SnakeGame
 
             UpdateBodyPartPositions();
 
-            float movementAngle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
+            float movementAngle = Mathf.Atan2(_currentDirection.y, _currentDirection.x) * Mathf.Rad2Deg;
 
             if (movementAngle < 0)
             {
                 movementAngle += 360;
             }
 
+            _previousMovementDirection = _currentDirection;
             _head.Rotation = Quaternion.Euler(new Vector3(0, 0, movementAngle - 90));
             _head.Position = nextHeadPosition;
 
@@ -170,19 +175,29 @@ namespace SnakeGame
             Destroy(gameObject);
         }
 
+        void ISnake.ChangeColor(Color color)
+        {
+            _head.Color = color;
+
+            foreach (SnakeBodyPart bodyPart in _bodyParts)
+            {
+                bodyPart.Color = color;
+            }
+        }
+
         void ISnake.ChangeMovementDirection(Vector2Int direction)
         {
-            if (direction == Vector2Int.left && _direction == Vector2Int.right || (direction == Vector2Int.right && _direction == Vector2Int.left))
+            if (direction == Vector2Int.left && _previousMovementDirection == Vector2Int.right || (direction == Vector2Int.right && _previousMovementDirection == Vector2Int.left))
             {
                 return;
             }
 
-            if (direction == Vector2Int.up && _direction == Vector2Int.down || direction == Vector2Int.down && _direction == Vector2Int.up)
+            if (direction == Vector2Int.up && _previousMovementDirection == Vector2Int.down || direction == Vector2Int.down && _previousMovementDirection == Vector2Int.up)
             {
                 return;
             }
 
-            _direction = direction;
+            _currentDirection = direction;
         }
 
         void ISnake.IncreaseBodySize()

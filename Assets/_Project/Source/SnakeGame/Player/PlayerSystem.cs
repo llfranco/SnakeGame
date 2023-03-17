@@ -21,10 +21,10 @@ namespace SnakeGame
                 return;
             }
 
-            foreach (PlayerActionMap actionMap in _settings.PlayerActionMaps)
+            foreach (PlayerSettings playerSettings in _settings.PlayerList)
             {
                 ISnake snake = snakeService.SpawnSnake();
-                PlayerController controller = new(actionMap, snake);
+                PlayerController controller = new(playerSettings, snake);
 
                 _activeControllers.Add(controller);
             }

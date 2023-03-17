@@ -44,13 +44,14 @@ namespace SnakeGame.UI
                 gameService.OnLateGameEnd -= HandleGameServiceLateGameEnd;
             }
 
-            _pressButtonAction.performed -= HandlePressButtonInputActionPerformed;
-            _pressButtonAction.Enable();
             _restartGameButton.onClick.RemoveAllListeners();
         }
 
         private void HandlePressButtonInputActionPerformed(InputAction.CallbackContext context)
         {
+            _pressButtonAction.performed -= HandlePressButtonInputActionPerformed;
+            _pressButtonAction.Enable();
+
             if (!ServiceLocator<IGameService>.TryGetService(out IGameService gameService))
             {
                 return;

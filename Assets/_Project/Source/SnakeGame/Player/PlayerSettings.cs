@@ -3,9 +3,12 @@ using UnityEngine.InputSystem;
 
 namespace SnakeGame
 {
-    [CreateAssetMenu(menuName = "SnakeGame/" + nameof(PlayerActionMap), fileName = nameof(PlayerActionMap))]
-    public class PlayerActionMap : ScriptableObject
+    [CreateAssetMenu(menuName = "SnakeGame/" + nameof(PlayerSettings), fileName = nameof(PlayerSettings))]
+    public class PlayerSettings : ScriptableObject
     {
+        [SerializeField]
+        private Color _color;
+
         [SerializeField]
         private InputAction _moveNorthAction;
 
@@ -17,6 +20,8 @@ namespace SnakeGame
 
         [SerializeField]
         private InputAction _moveEastAction;
+
+        public Color Color => _color;
 
         public InputAction MoveNorthAction => _moveNorthAction;
 

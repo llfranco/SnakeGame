@@ -5,39 +5,40 @@ namespace SnakeGame
 {
     public sealed class PlayerController
     {
-        private readonly PlayerActionMap _actionMap;
+        private readonly PlayerSettings _settings;
         private readonly ISnake _snake;
 
-        public PlayerController(PlayerActionMap actionMap, ISnake snake)
+        public PlayerController(PlayerSettings settings, ISnake snake)
         {
-            _actionMap = actionMap;
+            _settings = settings;
             _snake = snake;
+            _snake.ChangeColor(settings.Color);
 
             BindInputActionListeners();
         }
 
         public void EnableInputs()
         {
-            _actionMap.MoveNorthAction.Enable();
-            _actionMap.MoveSouthAction.Enable();
-            _actionMap.MoveWestAction.Enable();
-            _actionMap.MoveEastAction.Enable();
+            _settings.MoveNorthAction.Enable();
+            _settings.MoveSouthAction.Enable();
+            _settings.MoveWestAction.Enable();
+            _settings.MoveEastAction.Enable();
         }
 
         public void DisableInputs()
         {
-            _actionMap.MoveNorthAction.Disable();
-            _actionMap.MoveSouthAction.Disable();
-            _actionMap.MoveWestAction.Disable();
-            _actionMap.MoveEastAction.Disable();
+            _settings.MoveNorthAction.Disable();
+            _settings.MoveSouthAction.Disable();
+            _settings.MoveWestAction.Disable();
+            _settings.MoveEastAction.Disable();
         }
 
         private void BindInputActionListeners()
         {
-            _actionMap.MoveNorthAction.performed += HandleMoveNorthInputActionPerformed;
-            _actionMap.MoveSouthAction.performed += HandleMoveSouthInputActionPerformed;
-            _actionMap.MoveWestAction.performed += HandleMoveWestInputActionPerformed;
-            _actionMap.MoveEastAction.performed += HandleMoveEastInputActionPerformed;
+            _settings.MoveNorthAction.performed += HandleMoveNorthInputActionPerformed;
+            _settings.MoveSouthAction.performed += HandleMoveSouthInputActionPerformed;
+            _settings.MoveWestAction.performed += HandleMoveWestInputActionPerformed;
+            _settings.MoveEastAction.performed += HandleMoveEastInputActionPerformed;
         }
 
         private void HandleMoveNorthInputActionPerformed(InputAction.CallbackContext context)
