@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f44f88c1c0b4f07809920499324964f, type: 3}
   m_Name: BoardSettings
   m_EditorClassIdentifier: 
-  _size: {x: 20, y: 20}
+  _size: {x: 50, y: 50}
   _slotPrefab: {fileID: 5110281779866153793, guid: 9349d588cd73797458c754edde450bfa, type: 3}
