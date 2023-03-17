@@ -8,6 +8,8 @@ namespace SnakeGame
     {
         public delegate void SnakeHandler(Snake sender);
 
+        public delegate bool PositionValidatorHandler(Snake caller, Vector2Int position);
+
         public event SnakeHandler OnMove;
         public event SnakeHandler OnDeath;
 
@@ -18,11 +20,17 @@ namespace SnakeGame
         private SnakeBodyPart _head;
         private List<SnakeBodyPart> _bodyParts;
         private List<TransformRecord> _headTransformRecords;
+        private PositionValidatorHandler _positionValidatorHandler;
 
         public void CreateHead()
         {
             _head = Instantiate(_settings.HeadPrefab);
             _head.Snake = this;
+        }
+
+        public void SetPositionValidatorHandler(PositionValidatorHandler value)
+        {
+            _positionValidatorHandler = value;
         }
 
         public void SetPosition(Vector2Int position)
@@ -50,6 +58,21 @@ namespace SnakeGame
             {
                 DelayedSelfDestroy();
             }
+        }
+
+        public List<Vector2Int> GetOccupyingPositions()
+        {
+            List<Vector2Int> positions = new()
+            {
+                _head.Position,
+            };
+
+            foreach (SnakeBodyPart bodyPart in _bodyParts)
+            {
+                positions.Add(bodyPart.Position);
+            }
+
+            return positions;
         }
 
         private void Awake()
@@ -117,10 +140,7 @@ namespace SnakeGame
 
         private bool DieIfInvalidPosition(Vector2Int position)
         {
-            bool doesPositionExist = ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService) && boardService.DoesPositionExist(position);
-            bool hasBodyPartInMatchingPosition = HasBodyPartInMatchingPosition(position);
-
-            if (doesPositionExist && !hasBodyPartInMatchingPosition)
+            if (_positionValidatorHandler == null || _positionValidatorHandler.Invoke(this, position))
             {
                 return false;
             }
@@ -133,27 +153,21 @@ namespace SnakeGame
 
         private void DelayedSelfDestroy()
         {
+            if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService))
+            {
+                return;
+            }
+
+            boardService.UnoccupyPosition(_head);
             Destroy(_head.gameObject);
 
             foreach (SnakeBodyPart bodyPart in _bodyParts)
             {
+                boardService.UnoccupyPosition(bodyPart);
                 Destroy(bodyPart.gameObject);
             }
 
             Destroy(gameObject);
-        }
-
-        private bool HasBodyPartInMatchingPosition(Vector2Int position)
-        {
-            foreach (SnakeBodyPart bodyPart in _bodyParts)
-            {
-                if (bodyPart.Position == position)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         void ISnake.ChangeMovementDirection(Vector2Int direction)

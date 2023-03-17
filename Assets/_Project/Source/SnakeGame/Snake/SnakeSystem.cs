@@ -30,6 +30,29 @@ namespace SnakeGame
             ServiceLocator<ISnakeService>.SetService(null, _serviceKey);
         }
 
+        private bool IsPositionValid(Snake caller, Vector2Int position)
+        {
+            if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService) || !boardService.DoesPositionExist(position))
+            {
+                return false;
+            }
+
+            foreach (Snake snake in _activeSnakes)
+            {
+                List<Vector2Int> snakeOccupyingPositions = snake.GetOccupyingPositions();
+
+                foreach (Vector2Int value in snakeOccupyingPositions)
+                {
+                    if (value == position)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         private void HandleSnakeMove(Snake sender)
         {
             OnSnakeMoved?.Invoke();
@@ -59,6 +82,7 @@ namespace SnakeGame
             snake.OnMove += HandleSnakeMove;
             snake.OnDeath += HandleSnakeDeath;
             snake.CreateHead();
+            snake.SetPositionValidatorHandler(IsPositionValid);
             snake.SetPosition(boardService.GetUnoccupiedPosition());
 
             _activeSnakes.Add(snake);
