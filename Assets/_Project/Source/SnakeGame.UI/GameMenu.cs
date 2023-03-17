@@ -26,12 +26,27 @@ namespace SnakeGame.UI
             _pressButtonAction.performed += HandlePressButtonInputActionPerformed;
             _pressButtonAction.Enable();
 
+            Show();
+        }
+
+        private void Start()
+        {
             if (ServiceLocator<IGameService>.TryGetService(out IGameService gameService))
             {
-                gameService.OnGameEnd += HandleGameServiceGameEnd;
+                gameService.OnLateGameEnd += HandleGameServiceLateGameEnd;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (ServiceLocator<IGameService>.TryGetService(out IGameService gameService))
+            {
+                gameService.OnLateGameEnd -= HandleGameServiceLateGameEnd;
             }
 
-            Show();
+            _pressButtonAction.performed -= HandlePressButtonInputActionPerformed;
+            _pressButtonAction.Enable();
+            _restartGameButton.onClick.RemoveAllListeners();
         }
 
         private void HandlePressButtonInputActionPerformed(InputAction.CallbackContext context)
@@ -50,7 +65,7 @@ namespace SnakeGame.UI
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        private void HandleGameServiceGameEnd()
+        private void HandleGameServiceLateGameEnd()
         {
             _restartGameButton.gameObject.SetActive(true);
             _pressButtonText.gameObject.SetActive(false);

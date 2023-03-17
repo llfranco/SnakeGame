@@ -19,6 +19,11 @@ namespace SnakeGame.UI
             Show();
         }
 
+        private void OnDestroy()
+        {
+            _playButton.onClick.RemoveAllListeners();
+        }
+
         private void HandlePlayButtonClick()
         {
             SceneManager.LoadScene(_gameSceneName);

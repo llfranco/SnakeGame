@@ -6,7 +6,7 @@ namespace SnakeGame
 
     public interface IGameService : IService
     {
-        event GameHandler OnGameEnd;
+        event GameHandler OnLateGameEnd;
 
         void BeginGame();
     }

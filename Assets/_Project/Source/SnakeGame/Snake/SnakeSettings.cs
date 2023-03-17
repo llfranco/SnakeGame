@@ -17,6 +17,9 @@ namespace SnakeGame
         [SerializeField]
         private float _movementRate = 0.125f;
 
+        [SerializeField]
+        private float _selfDestroyDelay = 0.1f;
+
         public SnakeBodyPart HeadPrefab => _headPrefab;
 
         public SnakeBodyPart BodyPartPrefab => _bodyPartPrefab;
@@ -24,5 +27,7 @@ namespace SnakeGame
         public int MovementSpeed => _movementSpeed;
 
         public float MovementRate => _movementRate;
+
+        public float SelfDestroyDelay => _selfDestroyDelay;
     }
 }

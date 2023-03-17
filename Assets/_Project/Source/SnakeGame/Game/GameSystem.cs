@@ -6,7 +6,7 @@ namespace SnakeGame
 {
     public sealed class GameSystem : MonoBehaviour, IGameService
     {
-        public event GameHandler OnGameEnd;
+        public event GameHandler OnLateGameEnd;
 
         private readonly object _serviceKey = new();
 
@@ -47,9 +47,38 @@ namespace SnakeGame
             }
         }
 
+        private void OnDestroy()
+        {
+            _cameraSystem = null;
+            _playerSystem = null;
+            _board = null;
+            _snakeSystem = null;
+            _foodSystem = null;
+            _gameStateListeners.Clear();
+
+            ServiceLocator<IGameService>.SetService(null, _serviceKey);
+        }
+
         private void EndGame()
         {
-            OnGameEnd?.Invoke();
+            _snakeSystem.OnSnakeMoved -= HandleSnakeMoved;
+            _snakeSystem.OnSnakesDied -= HandleSnakesDied;
+
+            foreach (IGameStateListener listener in _gameStateListeners)
+            {
+                listener.NotifyGameEnd();
+            }
+
+            OnLateGameEnd?.Invoke();
+        }
+
+        private void HandleSnakeMoved()
+        {
+        }
+
+        private void HandleSnakesDied()
+        {
+            EndGame();
         }
 
         void IGameService.BeginGame()
@@ -58,6 +87,9 @@ namespace SnakeGame
             {
                 listener.NotifyGameBegin();
             }
+
+            _snakeSystem.OnSnakeMoved += HandleSnakeMoved;
+            _snakeSystem.OnSnakesDied += HandleSnakesDied;
         }
     }
 }

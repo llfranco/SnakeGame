@@ -6,6 +6,11 @@ namespace SnakeGame
 {
     public sealed class SnakeSystem : ISnakeService, IGameStateListener
     {
+        public delegate void SnakesHandler();
+
+        public event SnakesHandler OnSnakeMoved;
+        public event SnakesHandler OnSnakesDied;
+
         private readonly object _serviceKey;
         private readonly SnakeSystemSettings _settings;
         private readonly List<Snake> _activeSnakes;
@@ -20,6 +25,29 @@ namespace SnakeGame
             ServiceLocator<ISnakeService>.SetService(this, _serviceKey);
         }
 
+        ~SnakeSystem()
+        {
+            ServiceLocator<ISnakeService>.SetService(null, _serviceKey);
+        }
+
+        private void HandleSnakeMove(Snake sender)
+        {
+            OnSnakeMoved?.Invoke();
+        }
+
+        private void HandleSnakeDeath(Snake sender)
+        {
+            sender.StopMoving();
+            sender.SelfDestroy();
+
+            _activeSnakes.Remove(sender);
+
+            if (_activeSnakes.Count == 0)
+            {
+                OnSnakesDied?.Invoke();
+            }
+        }
+
         ISnake ISnakeService.SpawnSnake()
         {
             if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService))
@@ -28,7 +56,8 @@ namespace SnakeGame
             }
 
             Snake snake = Object.Instantiate(_settings.SnakePrefab, Vector3.zero, Quaternion.identity);
-
+            snake.OnMove += HandleSnakeMove;
+            snake.OnDeath += HandleSnakeDeath;
             snake.CreateHead();
             snake.SetPosition(boardService.GetUnoccupiedPosition());
 
@@ -51,6 +80,15 @@ namespace SnakeGame
 
         void IGameStateListener.NotifyGameEnd()
         {
+            if (_activeSnakes.Count == 0)
+            {
+                return;
+            }
+
+            foreach (Snake snake in _activeSnakes)
+            {
+                snake.StopMoving();
+            }
         }
     }
 }

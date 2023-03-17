@@ -32,6 +32,11 @@ namespace SnakeGame
             ServiceLocator<IBoardService>.SetService(this, _serviceKey);
         }
 
+        ~Board()
+        {
+            ServiceLocator<IBoardService>.SetService(null, _serviceKey);
+        }
+
         void IBoardService.OccupyPosition(IBoardObject occupier)
         {
             _slots[occupier.Position.y][occupier.Position.x].Occupier = occupier;
@@ -67,6 +72,22 @@ namespace SnakeGame
         bool IBoardService.DoesPositionExist(Vector2Int position)
         {
             return position is { x: >= 0, y: >= 0 } && position.x < _settings.Size.x && position.y < _settings.Size.y;
+        }
+
+        bool IBoardService.HasAnyUnoccupiedPosition()
+        {
+            for (int y = 0; y < _settings.Size.y; y++)
+            {
+                for (int x = 0; x < _settings.Size.x; x++)
+                {
+                    if (_slots[y][x].Occupier == null)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

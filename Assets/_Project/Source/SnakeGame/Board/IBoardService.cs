@@ -14,5 +14,7 @@ namespace SnakeGame
         Vector2Int GetUnoccupiedPosition();
 
         bool DoesPositionExist(Vector2Int position);
+
+        bool HasAnyUnoccupiedPosition();
     }
 }

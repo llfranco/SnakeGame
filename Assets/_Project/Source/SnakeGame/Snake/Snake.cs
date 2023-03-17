@@ -6,9 +6,10 @@ namespace SnakeGame
 {
     public sealed class Snake : MonoBehaviour, ISnake
     {
-        public delegate void DeathHandler(Snake sender);
+        public delegate void SnakeHandler(Snake sender);
 
-        public event DeathHandler OnDeath;
+        public event SnakeHandler OnMove;
+        public event SnakeHandler OnDeath;
 
         [SerializeField]
         private SnakeSettings _settings;
@@ -32,6 +33,23 @@ namespace SnakeGame
         public void StartMoving()
         {
             InvokeRepeating(nameof(Move), 0f, _settings.MovementRate);
+        }
+
+        public void StopMoving()
+        {
+            CancelInvoke(nameof(Move));
+        }
+
+        public void SelfDestroy()
+        {
+            if (_settings.SelfDestroyDelay > 0f)
+            {
+                Invoke(nameof(DelayedSelfDestroy), _settings.SelfDestroyDelay);
+            }
+            else
+            {
+                DelayedSelfDestroy();
+            }
         }
 
         private void Awake()
@@ -88,11 +106,8 @@ namespace SnakeGame
 
             _head.Rotation = Quaternion.Euler(new Vector3(0, 0, movementAngle - 90));
             _head.Position = nextHeadPosition;
-        }
 
-        private void StopMoving()
-        {
-            CancelInvoke(nameof(Move));
+            OnMove?.Invoke(this);
         }
 
         private void Die()
@@ -114,6 +129,18 @@ namespace SnakeGame
             Die();
 
             return true;
+        }
+
+        private void DelayedSelfDestroy()
+        {
+            Destroy(_head.gameObject);
+
+            foreach (SnakeBodyPart bodyPart in _bodyParts)
+            {
+                Destroy(bodyPart.gameObject);
+            }
+
+            Destroy(gameObject);
         }
 
         private bool HasBodyPartInMatchingPosition(Vector2Int position)
