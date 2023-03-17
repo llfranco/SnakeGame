@@ -2,48 +2,51 @@
 
 namespace SnakeGame
 {
-    public sealed class Board : MonoBehaviour, IBoardService
+    public sealed class Board : IBoardService
     {
-        private static readonly object ServiceKey = new();
+        private readonly object _serviceKey;
+        private readonly BoardSettings _settings;
+        private readonly GameObject _root;
+        private readonly BoardSlot[][] _slots;
 
-        [SerializeField]
-        private BoardSettings _settings;
-
-        private BoardSlot[,] _slots;
-
-        public void CreateSlots()
+        public Board(BoardSettings settings)
         {
-            int rows = _settings.Size.y;
-            int columns = _settings.Size.x;
+            _serviceKey = new object();
+            _settings = settings;
+            _root = new GameObject(nameof(Board));
+            _slots = new BoardSlot[_settings.Size.y][];
 
-            _slots = new BoardSlot[rows, columns];
-
-            for (int row = 0; row < rows; row++)
+            for (int y = 0; y < _settings.Size.y; y++)
             {
-                for (int column = 0; column < columns; column++)
+                _slots[y] = new BoardSlot[_settings.Size.x];
+
+                for (int x = 0; x < _settings.Size.x; x++)
                 {
-                    _slots[row, column] = Instantiate(_settings.SlotPrefab, new Vector3(column, row), Quaternion.identity, transform);
-                    _slots[row, column].name = $"{nameof(BoardSlot)}_{row}_{column}";
+                    _slots[y][x] = Object.Instantiate(_settings.SlotPrefab, new Vector3(x, y), Quaternion.identity, _root.transform);
+                    _slots[y][x].name = $"{nameof(BoardSlot)}_{y}_{x}";
                 }
             }
+
+            ServiceLocator<IBoardService>.SetKey(_serviceKey);
+            ServiceLocator<IBoardService>.SetService(this, _serviceKey);
         }
 
-        public void OccupyPosition(IBoardObject occupier)
+        void IBoardService.OccupyPosition(IBoardObject occupier)
         {
-            _slots[occupier.Position.y, occupier.Position.x].Occupier = occupier;
+            _slots[occupier.Position.y][occupier.Position.x].Occupier = occupier;
         }
 
-        public void UnoccupyPosition(IBoardObject occupier)
+        void IBoardService.UnoccupyPosition(IBoardObject occupier)
         {
-            _slots[occupier.Position.y, occupier.Position.x].Occupier = null;
+            _slots[occupier.Position.y][occupier.Position.x].Occupier = null;
         }
 
-        public Vector2Int GetSize()
+        Vector2Int IBoardService.GetSize()
         {
             return _settings.Size;
         }
 
-        public Vector2Int GetUnoccupiedPosition()
+        Vector2Int IBoardService.GetUnoccupiedPosition()
         {
             int row;
             int column;
@@ -53,22 +56,16 @@ namespace SnakeGame
             {
                 row = Random.Range(0, _settings.Size.y);
                 column = Random.Range(0, _settings.Size.x);
-                targetSlot = _slots[row, column];
+                targetSlot = _slots[row][column];
             }
             while (targetSlot.Occupier != null);
 
             return new Vector2Int(row, column);
         }
 
-        public bool DoesPositionExist(Vector2Int position)
+        bool IBoardService.DoesPositionExist(Vector2Int position)
         {
             return position is { x: >= 0, y: >= 0 } && position.x < _settings.Size.x && position.y < _settings.Size.y;
-        }
-
-        private void Awake()
-        {
-            ServiceLocator<IBoardService>.SetKey(ServiceKey);
-            ServiceLocator<IBoardService>.SetService(this, ServiceKey);
         }
     }
 }

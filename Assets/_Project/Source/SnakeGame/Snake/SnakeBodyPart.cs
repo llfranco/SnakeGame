@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class SnakeBodyPart : MonoBehaviour, ISnakeBodyPart, IBoardObject
+    public sealed class SnakeBodyPart : MonoBehaviour, IBoardObject, IFoodInstigator
     {
         private Transform _transform;
         private Vector2Int _position;
@@ -38,6 +38,11 @@ namespace SnakeGame
         {
             _transform = transform;
             _position = Vector2Int.zero;
+        }
+
+        void IFoodInstigator.EatFood()
+        {
+            Snake.IncreaseBodySize();
         }
     }
 }

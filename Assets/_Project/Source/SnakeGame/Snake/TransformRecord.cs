@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public struct RecordedBoardObjectMovement
+    public struct TransformRecord
     {
         public Vector2Int Position;
         public Quaternion Rotation;

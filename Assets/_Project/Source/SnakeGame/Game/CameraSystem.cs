@@ -1,22 +1,14 @@
 ﻿using UnityEngine;
 
-namespace SnakeGame.Game
+namespace SnakeGame
 {
-    public sealed class CameraSystem : MonoBehaviour
+    public sealed class CameraSystem : IGameStateListener
     {
-        private MainCamera _mainCamera;
+        private readonly MainCamera _mainCamera;
 
-        private void Awake()
+        public CameraSystem()
         {
-            _mainCamera = FindObjectOfType<MainCamera>();
-        }
-
-        private void Start()
-        {
-            if (_mainCamera)
-            {
-                LookAtBoardCenter();
-            }
+            _mainCamera = Object.FindObjectOfType<MainCamera>();
         }
 
         private void LookAtBoardCenter()
@@ -27,9 +19,34 @@ namespace SnakeGame.Game
             }
 
             Vector2Int boardSize = boardService.GetSize();
-            Vector3 boardCenter = new((boardSize.x - 1) / 2f, (boardSize.y - 1) / 2f, -10f);
+            Vector3 boardCenter = new((boardSize.x - 1) / 2f, (boardSize.y - 1) / 2f);
 
-            _mainCamera.transform.position = boardCenter;
+            _mainCamera.transform.position = new Vector3(boardCenter.x, boardCenter.y, -1f);
+
+            float screenRatio = Screen.width / (float)Screen.height;
+            float targetRatio = boardSize.x / (float)boardSize.y;
+ 
+            if (screenRatio >= targetRatio)
+            {
+                _mainCamera.Camera.orthographicSize = boardSize.y / 2f;
+            }
+            else
+            {
+                _mainCamera.Camera.orthographicSize = boardSize.y / 2f * (targetRatio / screenRatio);
+            }
+        }
+
+        void IGameStateListener.NotifyGameSetup()
+        {
+            LookAtBoardCenter();
+        }
+
+        void IGameStateListener.NotifyGameBegin()
+        {
+        }
+
+        void IGameStateListener.NotifyGameEnd()
+        {
         }
     }
 }

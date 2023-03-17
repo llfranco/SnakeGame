@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class Snake : MonoBehaviour, ISnake
+    public sealed class Snake : MonoBehaviour, ISnake, IGameStateListener
     {
         public delegate void DeathHandler(Snake sender);
 
@@ -15,51 +15,20 @@ namespace SnakeGame
         private Vector2Int _direction;
         private SnakeBodyPart _head;
         private List<SnakeBodyPart> _bodyParts;
-        private List<RecordedBoardObjectMovement> _headRecordedMovements;
-
-        public void StartMoving()
-        {
-            InvokeRepeating(nameof(Move), _settings.StartMovingDelay, _settings.MovementRate);
-        }
-
-        public void StopMoving()
-        {
-            CancelInvoke(nameof(Move));
-        }
-
-        public void SetPosition(Vector2Int position)
-        {
-            _head.Position = position;
-        }
-
-        public void ChangeMovementDirection(Vector2Int direction)
-        {
-            if (direction == Vector2Int.left && _direction == Vector2Int.right || (direction == Vector2Int.right && _direction == Vector2Int.left))
-            {
-                return;
-            }
-
-            if (direction == Vector2Int.up && _direction == Vector2Int.down || direction == Vector2Int.down && _direction == Vector2Int.up)
-            {
-                return;
-            }
-
-            _direction = direction;
-        }
-
-        public void IncreaseBodySize()
-        {
-            CreateBodyPart();
-            UpdateBodyPartPositions();
-        }
+        private List<TransformRecord> _headTransformRecords;
 
         private void Awake()
         {
             _direction = Vector2Int.down;
             _bodyParts = new List<SnakeBodyPart>();
-            _headRecordedMovements = new List<RecordedBoardObjectMovement>();
+            _headTransformRecords = new List<TransformRecord>();
 
             CreateHead();
+        }
+
+        private void SetPosition(Vector2Int position)
+        {
+            _head.Position = position;
         }
 
         private void CreateHead()
@@ -79,9 +48,14 @@ namespace SnakeGame
         {
             for (int i = 0; i < _bodyParts.Count; i++)
             {
-                _bodyParts[i].Position = _headRecordedMovements[i].Position;
-                _bodyParts[i].Rotation = _headRecordedMovements[i].Rotation;
+                _bodyParts[i].Position = _headTransformRecords[i].Position;
+                _bodyParts[i].Rotation = _headTransformRecords[i].Rotation;
             }
+        }
+
+        private void StartMoving()
+        {
+            InvokeRepeating(nameof(Move), 0f, _settings.MovementRate);
         }
 
         private void Move()
@@ -93,15 +67,15 @@ namespace SnakeGame
                 return;
             }
 
-            _headRecordedMovements.Insert(0, new RecordedBoardObjectMovement
+            _headTransformRecords.Insert(0, new TransformRecord
             {
                 Position = _head.Position,
                 Rotation = _head.Rotation,
             });
 
-            if (_headRecordedMovements.Count > _bodyParts.Count + 1)
+            if (_headTransformRecords.Count > _bodyParts.Count + 1)
             {
-                _headRecordedMovements.RemoveAt(_headRecordedMovements.Count - 1);
+                _headTransformRecords.RemoveAt(_headTransformRecords.Count - 1);
             }
 
             UpdateBodyPartPositions();
@@ -117,9 +91,13 @@ namespace SnakeGame
             _head.Position = nextHeadPosition;
         }
 
+        private void StopMoving()
+        {
+            CancelInvoke(nameof(Move));
+        }
+
         private void Die()
         {
-            Debug.Log("Snake has died");
             OnDeath?.Invoke(this);
         }
 
@@ -150,6 +128,46 @@ namespace SnakeGame
             }
 
             return false;
+        }
+
+        void ISnake.ChangeMovementDirection(Vector2Int direction)
+        {
+            if (direction == Vector2Int.left && _direction == Vector2Int.right || (direction == Vector2Int.right && _direction == Vector2Int.left))
+            {
+                return;
+            }
+
+            if (direction == Vector2Int.up && _direction == Vector2Int.down || direction == Vector2Int.down && _direction == Vector2Int.up)
+            {
+                return;
+            }
+
+            _direction = direction;
+        }
+
+        void ISnake.IncreaseBodySize()
+        {
+            CreateBodyPart();
+            UpdateBodyPartPositions();
+        }
+
+        void IGameStateListener.NotifyGameSetup()
+        {
+            if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService))
+            {
+                return;
+            }
+
+            SetPosition(boardService.GetUnoccupiedPosition());
+        }
+
+        void IGameStateListener.NotifyGameBegin()
+        {
+            StartMoving();
+        }
+
+        void IGameStateListener.NotifyGameEnd()
+        {
         }
     }
 }

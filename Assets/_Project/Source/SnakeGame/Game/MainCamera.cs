@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 
-namespace SnakeGame.Game
+namespace SnakeGame
 {
     public sealed class MainCamera : MonoBehaviour
     {
-        public Camera Camera { get; private set; }
+        private Camera _camera;
 
-        private void Awake()
+        public Camera Camera
         {
-            Camera = GetComponent<Camera>();
+            get
+            {
+                return _camera ??= GetComponent<Camera>();
+            }
         }
     }
 }

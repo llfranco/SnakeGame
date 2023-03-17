@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SnakeGame
 {
-    [CreateAssetMenu(menuName = "SnakeGame/Board Settings", fileName = nameof(BoardSettings))]
+    [CreateAssetMenu(menuName = "SnakeGame/" + nameof(BoardSettings), fileName = nameof(BoardSettings))]
     public sealed class BoardSettings : ScriptableObject
     {
         [SerializeField]

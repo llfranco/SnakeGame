@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f44f88c1c0b4f07809920499324964f, type: 3}
-  m_Name: BoardSettings
+  m_Script: {fileID: 11500000, guid: c259c113db5645b38933588f19bca705, type: 3}
+  m_Name: FoodSystemSettings
   m_EditorClassIdentifier: 
-  _size: {x: 20, y: 20}
-  _slotPrefab: {fileID: 5110281779866153793, guid: 9349d588cd73797458c754edde450bfa, type: 3}
+  _foodPrefab: {fileID: -4167763726254301910, guid: 9911301a03b91a145b9a7d30e8317843, type: 3}

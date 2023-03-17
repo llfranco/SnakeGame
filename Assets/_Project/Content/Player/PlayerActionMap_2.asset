@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6e722a91bd485dbddacc8a2d69aefb, type: 3}
+  m_Name: PlayerActionMap_2
+  m_EditorClassIdentifier: 
+  _moveNorthAction:
+    m_Name: Move North
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: 794e3e3b-1f9c-4657-886b-b8b1862e857d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 8507ebe6-c1d9-4a4d-b996-0652ec594889
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move North
+      m_Flags: 0
+    m_Flags: 0
+  _moveSouthAction:
+    m_Name: Move South
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: beb2af4b-3148-411b-9bc9-e2fd4f263cc0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 5243a39e-88e7-461c-b840-ef670d1eb97b
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move South
+      m_Flags: 0
+    m_Flags: 0
+  _moveWestAction:
+    m_Name: Move West
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: 2e4c0553-d672-4db8-b69e-f56498da9542
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 73fc945a-6d84-4df6-bd16-5c324546cfa0
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move West
+      m_Flags: 0
+    m_Flags: 0
+  _moveEastAction:
+    m_Name: Move East
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: e7adfd46-1ead-4786-ad63-c5e1c692fc7b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 71ed26ab-59ac-4b57-87cf-77301f356f7d
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move East
+      m_Flags: 0
+    m_Flags: 0
