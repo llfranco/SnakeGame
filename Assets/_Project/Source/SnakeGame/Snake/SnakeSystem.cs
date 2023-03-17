@@ -83,7 +83,7 @@ namespace SnakeGame
             snake.OnDeath += HandleSnakeDeath;
             snake.CreateHead();
             snake.SetPositionValidatorHandler(IsPositionValid);
-            snake.SetPosition(boardService.GetUnoccupiedPosition());
+            snake.SetStartingPosition(boardService.GetUnoccupiedPosition(), _settings.StartingDirectionPriorityList);
 
             _activeSnakes.Add(snake);
 

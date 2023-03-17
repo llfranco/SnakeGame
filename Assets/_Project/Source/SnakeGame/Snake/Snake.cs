@@ -34,9 +34,30 @@ namespace SnakeGame
             _positionValidatorHandler = value;
         }
 
-        public void SetPosition(Vector2Int position)
+        public void SetStartingPosition(Vector2Int position, IReadOnlyList<Vector2Int> startingDirectionPriorityList)
         {
             _head.Position = position;
+
+            if (_positionValidatorHandler == null)
+            {
+                return;
+            }
+
+            foreach (Vector2Int direction in startingDirectionPriorityList)
+            {
+                Vector2Int nextPosition = _head.Position + direction * _settings.MovementSpeed;
+                Vector2Int secondNextPosition = _head.Position + direction * (_settings.MovementSpeed * 2);
+
+                if (!_positionValidatorHandler.Invoke(this, nextPosition) || !_positionValidatorHandler.Invoke(this, secondNextPosition))
+                {
+                    continue;
+                }
+
+                _previousMovementDirection = direction;
+                _currentDirection = direction;
+
+                break;
+            }
         }
 
         public void StartMoving()
