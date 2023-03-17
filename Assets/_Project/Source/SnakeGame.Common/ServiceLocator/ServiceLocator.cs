@@ -1,4 +1,4 @@
-namespace SnakeGame
+namespace SnakeGame.Common
 {
     public static class ServiceLocator<T> where T : IService
     {

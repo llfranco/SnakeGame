@@ -1,9 +1,10 @@
+using SnakeGame.Common;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class Snake : MonoBehaviour, ISnake, IGameStateListener
+    public sealed class Snake : MonoBehaviour, ISnake
     {
         public delegate void DeathHandler(Snake sender);
 
@@ -17,24 +18,27 @@ namespace SnakeGame
         private List<SnakeBodyPart> _bodyParts;
         private List<TransformRecord> _headTransformRecords;
 
+        public void CreateHead()
+        {
+            _head = Instantiate(_settings.HeadPrefab);
+            _head.Snake = this;
+        }
+
+        public void SetPosition(Vector2Int position)
+        {
+            _head.Position = position;
+        }
+
+        public void StartMoving()
+        {
+            InvokeRepeating(nameof(Move), 0f, _settings.MovementRate);
+        }
+
         private void Awake()
         {
             _direction = Vector2Int.down;
             _bodyParts = new List<SnakeBodyPart>();
             _headTransformRecords = new List<TransformRecord>();
-
-            CreateHead();
-        }
-
-        private void SetPosition(Vector2Int position)
-        {
-            _head.Position = position;
-        }
-
-        private void CreateHead()
-        {
-            _head = Instantiate(_settings.HeadPrefab);
-            _head.Snake = this;
         }
 
         private void CreateBodyPart()
@@ -51,11 +55,6 @@ namespace SnakeGame
                 _bodyParts[i].Position = _headTransformRecords[i].Position;
                 _bodyParts[i].Rotation = _headTransformRecords[i].Rotation;
             }
-        }
-
-        private void StartMoving()
-        {
-            InvokeRepeating(nameof(Move), 0f, _settings.MovementRate);
         }
 
         private void Move()
@@ -149,25 +148,6 @@ namespace SnakeGame
         {
             CreateBodyPart();
             UpdateBodyPartPositions();
-        }
-
-        void IGameStateListener.NotifyGameSetup()
-        {
-            if (!ServiceLocator<IBoardService>.TryGetService(out IBoardService boardService))
-            {
-                return;
-            }
-
-            SetPosition(boardService.GetUnoccupiedPosition());
-        }
-
-        void IGameStateListener.NotifyGameBegin()
-        {
-            StartMoving();
-        }
-
-        void IGameStateListener.NotifyGameEnd()
-        {
         }
     }
 }

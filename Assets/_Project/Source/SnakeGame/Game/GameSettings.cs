@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SnakeGame
 {
@@ -7,23 +6,23 @@ namespace SnakeGame
     public sealed class GameSettings : ScriptableObject
     {
         [SerializeField]
+        private PlayerSystemSettings _playerSystemSettings;
+
+        [SerializeField]
         private BoardSettings _boardSettings;
+
+        [SerializeField]
+        private SnakeSystemSettings _snakeSystemSettings;
 
         [SerializeField]
         private FoodSystemSettings _foodSystemSettings;
 
-        [SerializeField]
-        private List<PlayerActionMap> _playerActionMaps;
-
-        [SerializeField]
-        private Snake _snakePrefab;
+        public PlayerSystemSettings PlayerSystemSettings => _playerSystemSettings;
 
         public BoardSettings BoardSettings => _boardSettings;
 
+        public SnakeSystemSettings SnakeSystemSettings => _snakeSystemSettings;
+
         public FoodSystemSettings FoodSystemSettings => _foodSystemSettings;
-
-        public List<PlayerActionMap> PlayerActionMaps => _playerActionMaps;
-
-        public Snake SnakePrefab => _snakePrefab;
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace SnakeGame
 {
-    public sealed class PlayerController : IGameStateListener
+    public sealed class PlayerController
     {
         private readonly PlayerActionMap _actionMap;
         private readonly ISnake _snake;
@@ -14,6 +14,22 @@ namespace SnakeGame
             _snake = snake;
 
             BindInputActionListeners();
+        }
+
+        public void EnableInputs()
+        {
+            _actionMap.MoveNorthAction.Enable();
+            _actionMap.MoveSouthAction.Enable();
+            _actionMap.MoveWestAction.Enable();
+            _actionMap.MoveEastAction.Enable();
+        }
+
+        public void DisableInputs()
+        {
+            _actionMap.MoveNorthAction.Disable();
+            _actionMap.MoveSouthAction.Disable();
+            _actionMap.MoveWestAction.Disable();
+            _actionMap.MoveEastAction.Disable();
         }
 
         private void BindInputActionListeners()
@@ -42,26 +58,6 @@ namespace SnakeGame
         private void HandleMoveEastInputActionPerformed(InputAction.CallbackContext context)
         {
             _snake.ChangeMovementDirection(Vector2Int.right);
-        }
-
-        void IGameStateListener.NotifyGameSetup()
-        {
-        }
-
-        void IGameStateListener.NotifyGameBegin()
-        {
-            _actionMap.MoveNorthAction.Enable();
-            _actionMap.MoveSouthAction.Enable();
-            _actionMap.MoveWestAction.Enable();
-            _actionMap.MoveEastAction.Enable();
-        }
-
-        void IGameStateListener.NotifyGameEnd()
-        {
-            _actionMap.MoveNorthAction.Disable();
-            _actionMap.MoveSouthAction.Disable();
-            _actionMap.MoveWestAction.Disable();
-            _actionMap.MoveEastAction.Disable();
         }
     }
 }

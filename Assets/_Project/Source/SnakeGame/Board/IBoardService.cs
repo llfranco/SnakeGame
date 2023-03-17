@@ -1,3 +1,4 @@
+using SnakeGame.Common;
 using UnityEngine;
 
 namespace SnakeGame

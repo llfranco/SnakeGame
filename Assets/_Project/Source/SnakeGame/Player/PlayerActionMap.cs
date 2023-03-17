@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace SnakeGame
 {
-    [CreateAssetMenu(menuName = "SnakeGame/Player Action Map", fileName = nameof(PlayerActionMap))]
+    [CreateAssetMenu(menuName = "SnakeGame/" + nameof(PlayerActionMap), fileName = nameof(PlayerActionMap))]
     public class PlayerActionMap : ScriptableObject
     {
         [SerializeField]

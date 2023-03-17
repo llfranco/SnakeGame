@@ -1,39 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using SnakeGame.Common;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SnakeGame
 {
-    public sealed class GameSystem : MonoBehaviour
+    public sealed class GameSystem : MonoBehaviour, IGameService
     {
+        private readonly object _serviceKey = new();
+
         [SerializeField]
         private GameSettings _settings;
 
         private CameraSystem _cameraSystem;
+        private PlayerSystem _playerSystem;
         private Board _board;
+        private SnakeSystem _snakeSystem;
         private FoodSystem _foodSystem;
         private List<IGameStateListener> _gameStateListeners;
 
         private void Awake()
         {
             _cameraSystem = new CameraSystem();
+            _playerSystem = new PlayerSystem(_settings.PlayerSystemSettings);
             _board = new Board(_settings.BoardSettings);
+            _snakeSystem = new SnakeSystem(_settings.SnakeSystemSettings);
             _foodSystem = new FoodSystem(_settings.FoodSystemSettings);
             _gameStateListeners = new List<IGameStateListener>
             {
                 _cameraSystem,
+                _playerSystem,
+                _snakeSystem,
                 _foodSystem,
             };
 
-            foreach (PlayerActionMap actionMap in _settings.PlayerActionMaps)
-            {
-                Snake snake = Instantiate(_settings.SnakePrefab, Vector3.zero, Quaternion.identity);
-                PlayerController controller = new(actionMap, snake);
-
-                snake.OnDeath += HandleSnakeDeath;
-
-                _gameStateListeners.Add(controller);
-                _gameStateListeners.Add(snake);
-            }
+            ServiceLocator<IGameService>.SetKey(_serviceKey);
+            ServiceLocator<IGameService>.SetService(this, _serviceKey);
         }
 
         private void Start()
@@ -42,15 +43,14 @@ namespace SnakeGame
             {
                 listener.NotifyGameSetup();
             }
+        }
 
+        void IGameService.BeginGame()
+        {
             foreach (IGameStateListener listener in _gameStateListeners)
             {
                 listener.NotifyGameBegin();
             }
-        }
-
-        private void HandleSnakeDeath(Snake sender)
-        {
         }
     }
 }
